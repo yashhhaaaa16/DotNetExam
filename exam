@@ -1,0 +1,815 @@
+--------------------COLLECTIONS--------------------
+
+namespace Collections
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("🔹 C# Collection Examples 🔹\n");
+
+            // ✅ LIST
+            List<string> names = new List<string> { "Prasad", "Amit", "Sneha" };
+            names.Add("Rohit");
+            Console.WriteLine("📋 List:");
+            foreach (var name in names)
+                Console.WriteLine($"- {name}");
+            Console.WriteLine();
+
+            // ✅ STACK (LIFO)
+            Stack<string> books = new Stack<string>();
+            books.Push("C# Basics");
+            books.Push("ASP.NET Core");
+            books.Push("EF Core");
+            Console.WriteLine("📚 Stack (LIFO):");
+            while (books.Count > 0)
+                Console.WriteLine($"- {books.Pop()}");
+            Console.WriteLine();
+
+            // ✅ QUEUE (FIFO)
+            Queue<string> tasks = new Queue<string>();
+            tasks.Enqueue("Login Module");
+            tasks.Enqueue("Register Module");
+            tasks.Enqueue("Cart Module");
+            Console.WriteLine("📬 Queue (FIFO):");
+            while (tasks.Count > 0)
+                Console.WriteLine($"- {tasks.Dequeue()}");
+            Console.WriteLine();
+
+            // ✅ DICTIONARY
+            Dictionary<int, string> students = new Dictionary<int, string>();
+            students[1] = "Prasad";
+            students[2] = "Amit";
+            students[3] = "Sneha";
+            Console.WriteLine("📖 Dictionary (Key-Value Pairs):");
+            foreach (var student in students)
+                Console.WriteLine($"Roll {student.Key}: {student.Value}");
+        
+        }
+    }
+}
+==========================================================================================================================================================================================
+--------------FILEIO--------------
+
+using System;
+using System.IO;
+using System.Linq;
+
+namespace File_IO
+{
+    internal class Program
+    {
+        static string filePath = "customer.txt";
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine(" File I/O Operations & Analysis\n");
+
+            WriteToFile("Yash Mundhe.\nLives in Pune.\nLearning C# and File I/O operations.");
+
+            ReadFromFile();
+
+            AnalyzeFile();
+
+            UpdateFile("Yash Mundhe.\nNow updated with new data.\nStill learning File operations.");
+
+            ReadFromFile();
+
+            AnalyzeFile();
+
+            DeleteFile();
+
+            ReadFromFile();
+        }
+
+        // Create / Write
+        static void WriteToFile(string content)
+        {
+            File.WriteAllText(filePath, content);
+            Console.WriteLine(" File created and data written.\n");
+        }
+
+        // Read
+        static void ReadFromFile()
+        {
+            if (File.Exists(filePath))
+            {
+                string data = File.ReadAllText(filePath);
+                Console.WriteLine(" File Contents:\n" + data + "\n");
+            }
+            else
+            {
+                Console.WriteLine(" File does not exist.\n");
+            }
+        }
+
+        // Update
+        static void UpdateFile(string newContent)
+        {
+            if (File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, newContent);
+                Console.WriteLine(" File updated successfully.\n");
+            }
+            else
+            {
+                Console.WriteLine(" Cannot update. File does not exist.\n");
+            }
+        }
+
+        // Delete
+        static void DeleteFile()
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                Console.WriteLine(" File deleted successfully.\n");
+            }
+            else
+            {
+                Console.WriteLine(" Cannot delete. File does not exist.\n");
+            }
+        }
+
+        // Analyze File
+        static void AnalyzeFile()
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine(" Cannot analyze. File does not exist.\n");
+                return;
+            }
+
+            string content = File.ReadAllText(filePath);
+            int charCount = content.Length;
+            int wordCount = content.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            int lineCount = File.ReadAllLines(filePath).Length;
+            int statementCount = content.Count(c => c == '.');
+            int vowelCount = content.Count(c => "aeiouAEIOU".Contains(c));
+
+            Console.WriteLine(" File Analysis:");
+            Console.WriteLine($"Characters     : {charCount}");
+            Console.WriteLine($"Words          : {wordCount}");
+            Console.WriteLine($"Lines          : {lineCount}");
+            Console.WriteLine($"Statements (.) : {statementCount}");
+            Console.WriteLine($"Vowels         : {vowelCount}\n");
+        }
+    }
+}
+============================================================================================================================================================================================
+---------------LINQJOINQUERY----------------
+__Customer.cs__
+namespace LinqJoinQuery.Model;
+
+internal class Customer
+{
+    public int CustomerId { get; set; }
+
+    public string CustomerName { get; set; } = string.Empty;
+
+    public string City {  get; set; } = string.Empty;
+}
+__Order.cs__
+namespace LinqJoinQuery.Model;
+
+internal class Order
+{
+    public int OrderId { get; set; }
+    public DateTime OrderDate { get; set; }
+    public DateTime RequiredDate { get; set; }
+    public int Quantity { get; set; }
+    public int CustomerId { get; set; }
+    public int ProductId { get; set; }
+}
+__Product.cs__
+namespace LinqJoinQuery.Model;
+
+internal class Product
+{
+    public int ProductId { get; set; }
+
+    public string ProductName { get; set; } = string.Empty;
+
+    public double UnitPrice { get; set; }
+
+}
+
+__Program.cs__
+using System.Xml.Linq;
+using LinqJoinQuery.Model;
+
+namespace LinqJoinQuery
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Shopping Application");
+            
+
+            var Invoice = from Customer in GetAllCustomers()
+                          join
+                          Order in GetAllOrders()
+                          on Customer.CustomerId equals Order.CustomerId
+                          join
+                          Product in GetAllProducts()
+                          on Order.ProductId equals Product.ProductId
+                          where Customer.CustomerId == 101
+                          select new
+                          {
+                              CustomerId = Customer.CustomerId,
+                              CustomerName = Customer.CustomerName,
+                              City = Customer.City,
+                              OrderId = Order.OrderId,
+                              DeliveryDate = Order.RequiredDate,
+                              ProductName = Product.ProductName,
+                              UnitPrice = Product.UnitPrice,
+                              Quantity = Order.Quantity,
+                              TotalPrice = Order.Quantity * Product.UnitPrice,
+                          };
+            foreach (var invoice in Invoice)
+            {
+                Console.WriteLine("--------------------------------------------------------------------------------------------------");
+                Console.WriteLine($"| { invoice.CustomerId} | {invoice.CustomerName} | {invoice.City} | {invoice.OrderId} | {invoice.DeliveryDate} | {invoice.ProductName} | {invoice.UnitPrice} | {invoice.Quantity} | {invoice.TotalPrice}/- |" );
+                Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            }
+
+
+
+        }
+
+
+
+        private static List<Customer> GetAllCustomers()
+        {
+            var customers = from Customer in XElement.Load(@"C:\Users\user\Desktop\ExamDotNet\LinqJoinQuery\LinqJoinQuery\Customer.xml").Elements()
+                            select new Customer()
+                            {
+                                CustomerId = int.Parse(Customer.Attribute("CustomerId").Value),
+                                CustomerName = Customer.Attribute("CustomerName").Value,
+                                City = Customer.Attribute("City").Value
+                            };
+            return customers.ToList();
+        }
+
+        private static List<Product> GetAllProducts()
+        {
+            return new List<Product>(){
+                new Product() { ProductId = 1, ProductName = "bag", UnitPrice = 650.21 },
+                new Product() { ProductId = 2, ProductName = "pen", UnitPrice = 50.21 },
+                new Product() { ProductId = 3, ProductName = "Book", UnitPrice = 1080.21 },
+                new Product() { ProductId = 4, ProductName = "Botal", UnitPrice = 350.21 },
+
+                };
+
+        }
+
+        private static List<Order> GetAllOrders()
+        {
+            return new List<Order>() {
+
+                new Order{CustomerId = 101,OrderId=1001,ProductId = 1,OrderDate=DateTime.Now,RequiredDate=DateTime.Now.AddDays(2),Quantity=100},
+                new Order{CustomerId = 101,OrderId=1002,ProductId = 3,OrderDate=DateTime.Now,RequiredDate=DateTime.Now.AddDays(3),Quantity=10},
+                new Order{CustomerId = 102,OrderId=1003,ProductId = 4,OrderDate=DateTime.Now,RequiredDate=DateTime.Now.AddDays(2),Quantity=50},
+                new Order{CustomerId = 103,OrderId=1004,ProductId = 5,OrderDate=DateTime.Now,RequiredDate=DateTime.Now.AddDays(4),Quantity=1000},
+                new Order{CustomerId = 104,OrderId=1005,ProductId = 2,OrderDate=DateTime.Now,RequiredDate=DateTime.Now.AddDays(2),Quantity=100},
+
+            };
+        }
+    }
+}
+
+===============================================================================================================================================================================================
+----------------------------WEBAPI-----------------------------------
+                        CONTROLLERS
+___________________CustomerController.cs__________________
+using WEB_API.Repository;
+using Microsoft.AspNetCore.Mvc;
+using WEB_API.Models;
+namespace WEB_API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CustomersController : ControllerBase
+{
+
+    private readonly ICommonRepository<Customer> _customerRepository;
+
+    public CustomersController(ICommonRepository<Customer> customerRepository)
+    {
+        _customerRepository = customerRepository;
+    }
+
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Customer>>> getAllCustomers()
+    {
+        var customers = await _customerRepository.GetAllAsync();
+
+        if (customers.Count > 0)
+        {
+            return Ok(customers);
+        }
+        else
+        {
+            return NotFound("Customers Not Found...");
+
+        }
+    }
+
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<Customer>> getCustomer(int id)
+    {
+        var customer = await _customerRepository.GetDetailsAsync(id);
+
+        if (customer != null)
+        {
+            return Ok(customer);
+        }
+        else
+        {
+            return NotFound($"{id} => this Customer Not Found...");
+        }
+
+    }
+
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<ActionResult<Customer>> AddCustomer(Customer customer)
+    {
+        if (ModelState.IsValid)
+        {
+            int result = await _customerRepository.InsertAsync(customer);
+
+            if (result > 0)
+            {
+                return CreatedAtAction(
+                    actionName: "GetCustomer", 
+                    routeValues: new { id = customer.CustomerId },
+                    value: customer
+                );
+            }
+            else
+            {
+                return BadRequest("Unable to add customer...");
+            }
+        }
+        else
+        {
+            return BadRequest("Ensure all details are correct");
+        }
+    }
+
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPut]
+    public async Task<ActionResult<Customer>> UpdateCustomer(Customer customer)
+    {
+        if (ModelState.IsValid)
+        {
+            int result = await _customerRepository.UpdateAsync(customer);
+            if (result > 0)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest("Modification Not Successful...");
+            }
+        }
+        else
+        {
+            return BadRequest("Invalid Data...");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        int result = await _customerRepository.DeleteAsync(id);
+        if (result > 0)
+        {
+            return Ok($"{id} => Customer Deleted Sucessfully...");
+        }
+        else
+        {
+            return NotFound($"{id} => this Customer Not Found...");
+        }
+
+
+    }
+}
+WeatherForecastController___________
+using Microsoft.AspNetCore.Mvc;
+
+namespace WEB_API.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class WeatherForecastController : ControllerBase
+    {
+        private static readonly string[] Summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
+
+        private readonly ILogger<WeatherForecastController> _logger;
+
+        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        {
+            _logger = logger;
+        }
+
+        [HttpGet(Name = "GetWeatherForecast")]
+        public IEnumerable<WeatherForecast> Get()
+        {
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+            })
+            .ToArray();
+        }
+    }
+}
+
+                            DAL
+_______________________CustomerDBContext.cs______________________
+
+using WEB_API.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace WEB_API.DAL;
+
+public class CustumerDbContext : DbContext
+{
+    public CustumerDbContext()
+    {
+
+    }
+    public CustumerDbContext(DbContextOptions<CustumerDbContext> options) : base(options)
+    {
+
+    }
+
+    public DbSet<Customer> Customers { get; set; }
+
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var ServerVersion = new MySqlServerVersion(new Version(8, 0, 29));
+
+        if(!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseMySql("Server=localhost; Port=3306; Database = Exam; User Id = root; Password=Prasad@0102", ServerVersion);
+        }
+
+    }
+
+}
+                        MIGRATIONS
+
+______________CustumerDbContextModelSnapshot.cs___________
+// <auto-generated />
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using WEB_API.DAL;
+
+#nullable disable
+
+namespace WEB_API.Migrations
+{
+    [DbContext(typeof(CustumerDbContext))]
+    partial class CustumerDbContextModelSnapshot : ModelSnapshot
+    {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.17")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("WEB_API.Models.Customer", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CustomerId"));
+
+                    b.Property<string>("CustomerCity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerPhone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("Customers");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}
+_______________________CustomerMigrationDesigner.cs_______________________
+// <auto-generated />
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using WEB_API.DAL;
+
+#nullable disable
+
+namespace WEB_API.Migrations
+{
+    [DbContext(typeof(CustumerDbContext))]
+    [Migration("20250630170721_CustomerMigration")]
+    partial class CustomerMigration
+    {
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.17")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("WEB_API.Models.Customer", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CustomerId"));
+
+                    b.Property<string>("CustomerCity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CustomerPhone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("Customers");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}
+__________________CustomerMigration.cs___________________
+
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace WEB_API.Migrations
+{
+    /// <inheritdoc />
+    public partial class CustomerMigration : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CustomerName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CustomerEmail = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CustomerPhone = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CustomerCity = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.CustomerId);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Customers");
+        }
+    }
+}
+                        MODELS
+
+___________Customer.cs___________
+
+using System.ComponentModel.DataAnnotations;
+
+namespace WEB_API.Models;
+
+public class Customer
+{
+    [Key] 
+    public int CustomerId { get; set; }
+
+    [Required(ErrorMessage = "Customer Name is required...")]
+    [MaxLength(100)]
+    public string CustomerName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Customer Email is required...")]
+    [MaxLength(100)]
+    [EmailAddress]
+    public string CustomerEmail { get; set; }
+
+    [Required(ErrorMessage = "Customer Phone is required...")]
+    [MaxLength(100)]
+    public string CustomerPhone { get; set; }
+
+    [Required(ErrorMessage = "Customer City is required...")]
+    [MaxLength(100)]
+    public string CustomerCity { get; set; }
+}
+
+                            REPOSITORY
+
+__________CommonRepository.cs__________
+
+
+using WEB_API.DAL;
+using Microsoft.EntityFrameworkCore;
+
+namespace WEB_API.Repository;
+
+public class CommonRepository<T> : ICommonRepository<T> where T : class
+{
+    private readonly CustumerDbContext _context;
+
+    public CommonRepository(CustumerDbContext context)
+    {
+        _context = context;
+    }
+
+    
+
+    public async Task<List<T>> GetAllAsync()
+    {
+        return await _context.Set<T>().ToListAsync();
+    }
+
+    public async Task<T> GetDetailsAsync(int id)
+    {
+        return await _context.Set<T>().FindAsync(id);
+    }
+
+    public async Task<int> InsertAsync(T item)
+    {
+        await _context.Set<T>().AddAsync(item);
+        return await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> UpdateAsync(T item)
+    {
+         _context.Entry(item).State = EntityState.Modified;
+
+        return await _context.SaveChangesAsync();
+    }
+    public async Task<int> DeleteAsync(int id)
+    {
+        var entity = await _context.Set<T>().FindAsync(id);
+        if(entity == null)
+        {
+            return 0;
+        }
+        else
+        {
+            _context.Set<T>().Remove(entity);
+            return await _context.SaveChangesAsync();
+        }
+    }
+}
+
+_____________ICommonRepository.cs_______________
+namespace WEB_API.Repository;
+
+public interface ICommonRepository<T>
+{
+     Task<List<T>> GetAllAsync();
+
+     Task<T> GetDetailsAsync(int id);
+
+    Task<int> InsertAsync(T item);
+
+    Task<int> UpdateAsync(T item);
+
+    Task<int> DeleteAsync(int id);
+}
+
+_____________Program.cs(OUTSIDE)____________
+using WEB_API.Controllers;
+using WEB_API.DAL;
+using WEB_API.Models;
+using WEB_API.Repository;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+builder.Services.AddControllers();
+builder.Services.AddTransient<ICommonRepository<Customer>, CommonRepository<Customer>>();
+
+builder.Services.AddDbContext<CustumerDbContext>(options =>
+{
+    var serverVersion = new MySqlServerVersion(new Version(8, 0, 29));
+    options.UseMySql("Server=localhost;PORT=3306;Database=Exam;User Id=root;Password=Prasad@0102", serverVersion);
+});
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+_______________WeatherForeCast.cs________________
+namespace WEB_API
+{
+    public class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+        public string? Summary { get; set; }
+    }
+}
+==================================================================================================================================================================
+
