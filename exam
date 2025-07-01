@@ -812,4 +812,281 @@ namespace WEB_API
     }
 }
 ==================================================================================================================================================================
+--------------------COLLECTIONS--------------------
 
+1. List<T> CRUD - Menu Driven
+
+// ===== List<T> CRUD =====
+
+List<Student> students = new List<Student>();
+
+int nextId = 1;
+
+while (true) {
+
+ Console.WriteLine("\n--- List Menu ---");
+
+ Console.WriteLine("1. Add Student");
+
+ Console.WriteLine("2. View Students");
+
+ Console.WriteLine("3. Update Student");
+
+ Console.WriteLine("4. Delete Student");
+
+ Console.WriteLine("5. Exit");
+
+ string choice = Console.ReadLine();
+
+ switch (choice) {
+
+ case "1":
+
+ Console.Write("Enter Name: ");
+
+ string name = Console.ReadLine();
+
+ Console.Write("Enter Age: ");
+
+ int age = int.Parse(Console.ReadLine());
+
+ students.Add(new Student { Id = nextId++, Name = name, Age = age });
+
+ break;
+
+ case "2":
+
+ foreach (var s in students)
+
+ Console.WriteLine($"{s.Id} {s.Name} {s.Age}");
+
+ break;
+
+ case "3":
+
+ Console.Write("Enter ID to update: ");
+
+ int uid = int.Parse(Console.ReadLine());
+
+ var us = students.FirstOrDefault(s => s.Id == uid);
+
+ if (us != null) {
+
+ Console.Write("Enter New Name: ");
+
+ us.Name = Console.ReadLine();
+
+ Console.Write("Enter New Age: ");
+
+ us.Age = int.Parse(Console.ReadLine());
+
+ }
+
+ break;
+
+ case "4":
+
+ Console.Write("Enter ID to delete: ");
+
+ int did = int.Parse(Console.ReadLine());
+
+ var ds = students.FirstOrDefault(s => s.Id == did);
+
+ if (ds != null) students.Remove(ds);
+
+ break;
+
+ case "5": return;
+
+ }
+
+}
+
+2. Stack<T> CRUD - Menu Driven
+
+// ===== Stack<T> CRUD =====
+
+Stack<string> stack = new Stack<string>();
+while (true) {
+
+ Console.WriteLine("\n--- Stack Menu ---");
+
+ Console.WriteLine("1. Push Item");
+
+ Console.WriteLine("2. Peek Item");
+
+ Console.WriteLine("3. Pop Item");
+
+ Console.WriteLine("4. View All Items");
+
+ Console.WriteLine("5. Exit");
+
+ string choice = Console.ReadLine();
+
+ switch (choice) {
+
+ case "1":
+
+ Console.Write("Enter item to push: ");
+
+ stack.Push(Console.ReadLine());
+
+ break;
+
+ case "2":
+
+ Console.WriteLine("Top: " + (stack.Count > 0 ? stack.Peek() : "Empty"));
+
+ break;
+
+ case "3":
+
+ Console.WriteLine("Popped: " + (stack.Count > 0 ? stack.Pop() : "Empty"));
+
+ break;
+
+ case "4":
+
+ foreach (var item in stack) Console.WriteLine(item);
+
+ break;
+
+ case "5": return;
+
+ }
+
+}
+
+3. Queue<T> CRUD - Menu Driven
+
+// ===== Queue<T> CRUD =====
+
+Queue<string> queue = new Queue<string>();
+
+while (true) {
+
+ Console.WriteLine("\n--- Queue Menu ---");
+
+ Console.WriteLine("1. Enqueue Item");
+
+ Console.WriteLine("2. Peek Item");
+
+ Console.WriteLine("3. Dequeue Item");
+
+ Console.WriteLine("4. View All Items");
+
+ Console.WriteLine("5. Exit");
+
+ string choice = Console.ReadLine();
+
+ switch (choice) {
+
+ case "1":
+
+ Console.Write("Enter item to enqueue: ");
+
+ queue.Enqueue(Console.ReadLine());
+
+ break;
+
+ case "2":
+
+ Console.WriteLine("Front: " + (queue.Count > 0 ? queue.Peek() : "Empty"));
+
+ break;
+
+ case "3":
+
+ Console.WriteLine("Dequeued: " + (queue.Count > 0 ? queue.Dequeue() : "Empty"));
+
+ break;
+
+ case "4":
+
+ foreach (var item in queue) Console.WriteLine(item);
+
+ break;
+
+case "5": return;
+
+ }
+
+}
+
+4. Dictionary<TKey, TValue> CRUD - Menu Driven
+
+// ===== Dictionary<TKey, TValue> CRUD =====
+
+Dictionary<int, string> students = new Dictionary<int, string>();
+
+while (true) {
+
+ Console.WriteLine("\n--- Dictionary Menu ---");
+
+ Console.WriteLine("1. Add Student");
+
+ Console.WriteLine("2. View Students");
+
+ Console.WriteLine("3. Update Student");
+
+ Console.WriteLine("4. Delete Student");
+
+ Console.WriteLine("5. Exit");
+
+ string choice = Console.ReadLine();
+
+ switch (choice) {
+
+ case "1":
+
+ Console.Write("Enter ID: ");
+
+ int id = int.Parse(Console.ReadLine());
+
+ if (students.ContainsKey(id)) break;
+
+ Console.Write("Enter Name: ");
+
+ students[id] = Console.ReadLine();
+
+ break;
+
+ case "2":
+
+ foreach (var s in students)
+
+ Console.WriteLine($"{s.Key} {s.Value}");
+
+ break;
+
+ case "3":
+
+ Console.Write("Enter ID to update: ");
+
+ int uid = int.Parse(Console.ReadLine());
+
+ if (students.ContainsKey(uid)) {
+
+ Console.Write("Enter New Name: ");
+
+ students[uid] = Console.ReadLine();
+
+ }
+
+ break;
+
+ case "4":
+
+ Console.Write("Enter ID to delete: ");
+
+ int did = int.Parse(Console.ReadLine());
+
+ students.Remove(did);
+
+ break;
+
+ case "5": return;
+
+ }
+
+}
